@@ -40,27 +40,32 @@
   </div>
   </div>
   <script>
+    
+    // an array of regular expressions to match against, the first word in the array is the protocol
+    const keyWords =    ["trezor","1inch|inch", "aave", "maker|dai", "tether|usdt", "circle|usdc", 
+                        "uniswap|uni", "compound|comp", "synthetix|snx", "yearn|yfi", "curve|crv", "sushi|sushiswap", "balancer|bal", 
+                        "ren", "yam|yamv2|yamv3", "zerion"]
 
-    const keyWords = ["trezor","1inch", "aave", "maker", "dai", "usdt", "tether", "usdc", "uniswap", "compound", "synthetix", "yearn", "curve", "sushi", "balancer", "ren", "sushiswap", "uniswap", "yearn", "yfi", "yam", "zerion"]
 
-    // will return a json object of keyword[n] : count
-    function getKeywordCountFromArray(item) {
+    function handleData(data) {
         let keyWordCount = {}
+        let item = data.blacklist;
         for (let i = 0; i < keyWords.length; i++) {
             keyWordCount[keyWords[i]] = 0
         }
         for (let i = 0; i < item.length; i++) {
+            let url = item[i]
             for (let j = 0; j < keyWords.length; j++) {
-                if (item[i].includes(keyWords[j])) {
-                    keyWordCount[keyWords[j]] += 1
+                let keyWord = keyWords[j]
+                let regex = new RegExp(keyWord, "i")
+                if (regex.test(url)) {
+                    keyWordCount[keyWord] += 1
+                    item.splice(i, 1) // remove item from array to avoid double counting??
+                    i -= 1 // to account for the removed item
                 }
             }
         }
-        return keyWordCount;
-    }
 
-    function handleData(data) {
-        let keyWordCount = getKeywordCountFromArray(data.blacklist)
         console.log(keyWordCount);
         // now we'll make html elements for each keyword: count pair 
         // it will be a div saying "number of scam websites detected for keyword: count"
@@ -68,7 +73,8 @@
         for (let i = 0; i < keyWords.length; i++) {
             let div = document.createElement("div");
             div.className = "grid-item";
-            div.innerHTML = `<p class="text">scam websites detected for ${keyWords[i]}</p><p class="number" id="number">${keyWordCount[keyWords[i]]}</p>`
+            let word = keyWords[i].split("|")[0];
+            div.innerHTML = `<p class="text">scam websites detected for ${word}</p><p class="number" id="number">${keyWordCount[keyWords[i]]}</p>`
             gridLayout.appendChild(div);
         }
         
