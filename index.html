@@ -1,0 +1,147 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>web impersonators by protocol</title>
+  <meta name="description" content="web impersonators by protocol">
+  <meta name="author" content="Belactriple9">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
+  <!-- Open Graph -->
+  <meta name="og:title" content="web impersonators by protocol" />
+  <meta name="og:url" content="https://timdeschryver.dev/posts/gridsome-social-cards" />
+  <meta name="og:description" content="Average daily $1INCH price increase" />
+  <meta name="og:type" content="article" />
+  <meta name="og:image" content="/social.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@belactriple9" />
+  <meta name="twitter:title" content="web impersonators by protocol" />
+  <meta name="twitter:description" content="Average daily $1INCH price increase" />
+  <meta name="twitter:image" content="/social.png" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="content">
+      <div class="grid-layout" id="grid-layout">
+        <!-- <p class="text">On Average $1INCH Goes Up</p>
+        <p class="number transparent" id="number">$4</p>
+        <p class="text">Every Day</p> -->
+      </div>
+    </div>
+    <footer>By <a class="handle" href="https://twitter.com/0xBe1ac"> @0xBe1ac</a> <span class="source">(<a
+          href="https://github.com/belactriple9/1inch-daily">original source</a>)</span></footer>
+  </div>
+  </div>
+  <script>
+
+    const keyWords = ["trezor","1inch", "aave", "maker", "dai", "usdt", "tether", "usdc", "uniswap", "compound", "synthetix", "yearn", "curve", "sushi", "balancer", "ren", "sushiswap", "uniswap", "yearn", "yfi", "yam", "zerion"]
+
+    // will return a json object of keyword[n] : count
+    function getKeywordCountFromArray(item) {
+        let keyWordCount = {}
+        for (let i = 0; i < keyWords.length; i++) {
+            keyWordCount[keyWords[i]] = 0
+        }
+        for (let i = 0; i < item.length; i++) {
+            for (let j = 0; j < keyWords.length; j++) {
+                if (item[i].includes(keyWords[j])) {
+                    keyWordCount[keyWords[j]] += 1
+                }
+            }
+        }
+        return keyWordCount;
+    }
+
+    function handleData(data) {
+        let keyWordCount = getKeywordCountFromArray(data.blacklist)
+        console.log(keyWordCount);
+        // now we'll make html elements for each keyword: count pair 
+        // it will be a div saying "number of scam websites detected for keyword: count"
+        let gridLayout = document.getElementById("grid-layout");
+        for (let i = 0; i < keyWords.length; i++) {
+            let div = document.createElement("div");
+            div.className = "grid-item";
+            div.innerHTML = `<p class="text">scam websites detected for ${keyWords[i]}</p><p class="number" id="number">${keyWordCount[keyWords[i]]}</p>`
+            gridLayout.appendChild(div);
+        }
+        
+
+    }
+
+    // TODO: error handling
+    fetch('https://raw.githubusercontent.com/MetaMask/eth-phishing-detect/main/src/config.json')
+      .then(response => response.json())
+      .then(data => handleData(data))
+  </script>
+</body>
+<style>
+  body {
+    font-family: 'Special Elite', cursive;
+    background-image: linear-gradient(to right, rgba(13, 24, 42), rgba(8, 12, 21), rgba(28, 19, 38));
+  }
+
+  footer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  a:link {
+    color: inherit;
+  }
+
+  a:visited {
+    color: inherit;
+  }
+
+  .container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-layout{
+    /* grid of all grid-items */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 1rem;
+    padding: 1rem;
+
+  }
+
+
+
+  .text {
+    font-size: 1rem;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    color: white;
+  }
+
+  .number {
+    font-size: 2rem;
+    text-align: center;
+    padding: 0;
+    margin: 1rem 0 2rem 0;
+    color: white;
+  }
+
+  .transparent {
+    color: transparent;
+  }
+
+  .handle {
+    margin: 0 0.5rem 0 0.5rem;
+  }
+</style>
+
+</html>
